@@ -1,0 +1,41 @@
+程式碼的運作流程如下：
+
+匯入函式庫：
+
+requests 用於向網頁伺服器發送 HTTP 請求，以獲取網頁內容。
+BeautifulSoup 用於解析 HTML 或 XML 文件，方便我們從網頁結構中提取所需的資料。
+設定網址和請求標頭：
+
+url 變數儲存了目標網頁的網址。
+headers 字典用於模擬瀏覽器的使用者代理資訊（User-Agent），這有助於避免某些網站阻止程式的訪問。
+發送 HTTP 請求：
+
+requests.get(url, headers=headers) 發送一個 GET 請求到指定的網址，並帶上設定的請求標頭。
+伺服器的回應（包含網頁內容和狀態碼）會儲存在 response 變數中。
+檢查連線狀態：
+
+if response.status_code == 200: 檢查伺服器是否成功回應請求。HTTP 狀態碼 200 表示請求成功。
+解析網頁內容：
+
+soup = BeautifulSoup(response.text, "html.parser") 使用 BeautifulSoup 函式庫解析伺服器回傳的 HTML 內容。html.parser 是 Python 內建的 HTML 解析器。
+尋找教師資訊區塊：
+
+teacher_sections = soup.find_all("ul", class_="i-member-profile-list") 使用 BeautifulSoup 的 find_all() 方法尋找所有具有 class 屬性為 i-member-profile-list 的 <ul> 標籤。根據網頁結構，每一位教師的資訊都包含在這樣的一個 <ul> 區塊中。
+迭代處理每個教師區塊：
+
+for section in teacher_sections: 程式碼會遍歷找到的每一個教師資訊區塊。
+提取教師姓名：
+
+name_tag = section.find("span", class_="i-member-value member-data-value-name") 在當前的教師資訊區塊中，尋找具有 class 屬性為 i-member-value member-data-value-name 的 <span> 標籤，這個標籤通常包含教師的姓名。
+name = name_tag.get_text(strip=True) if name_tag else "無名氏" 如果找到了姓名標籤，則使用 get_text(strip=True) 方法提取標籤中的文字內容，並去除前後的空白字元。如果找不到姓名標籤，則將姓名設定為 "無名氏"。
+提取研究領域：
+
+research_tag = section.find("span", class_="i-member-value member-data-value-7") 在當前的教師資訊區塊中，尋找具有 class 屬性為 i-member-value member-data-value-7 的 <span> 標籤，這個標籤通常包含教師的研究領域資訊。
+research = research_tag.get_text(strip=True) if research_tag else "無資料" 如果找到了研究領域標籤，則提取其文字內容並去除空白。如果找不到，則將研究領域設定為 "無資料"。
+列印教師資訊：
+
+print(f"教授姓名：{name}") 和 print(f"研究領域：{research}") 將提取到的教師姓名和研究領域列印出來。
+print("-" * 30) 列印一條分隔線，使輸出結果更易讀。
+處理連線失敗的情況：
+
+else: print("無法連線至網站，請檢查網址或網路連線") 如果 response.status_code 不是 200，表示無法成功連線到網站，程式會印出錯誤訊息，提示檢查網址或網路連線。
